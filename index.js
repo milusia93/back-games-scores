@@ -20,6 +20,9 @@ app.use(cors());
 const PlayersRoutes = require('./app/routes/PlayersRoutes')();
 app.use('/players', PlayersRoutes);
 
+const GamesRoutes = require('./app/routes/GamesRoutes')();
+app.use('/games', GamesRoutes);
+
 app.listen(config.app.port, () => {
     console.log('Express server is up');
 });
