@@ -3,23 +3,31 @@ const Schema = mongoose.Schema;
 
 const GamingSessionSchema = new Schema({
     game: {
-        type: String, required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Game",
     },
     numplayers: {
-        type: Number, required: true
+      type: Number,
+      required: true,
     },
-    players: [{
-        type: String, required: true
-    }],
+    players: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Player",
+      },
+    ],
     date: {
-        type: Date, required: true 
+      type: Date,
+      required: true,
     },
     finished: {
-        type: Boolean, required: true 
+      type: Boolean,
+      required: true,
     },
     winner: {
-        type: String, required: false
-    }
-})
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Player",
+    },
+  });
 
 module.exports = mongoose.model("GamingSession", GamingSessionSchema)
