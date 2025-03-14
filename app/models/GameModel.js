@@ -10,7 +10,10 @@ const GameSchema = new Schema({
     },
     genres: [{
         type: String
-    }]
+    }],
+    imageUrl: {
+        type: String,
+    },
 })
 
 module.exports = mongoose.model('Game', GameSchema)

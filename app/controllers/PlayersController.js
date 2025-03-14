@@ -4,9 +4,7 @@ module.exports = {
     index: (req, res) => {
         PlayerModel.find()
             .then((players) => {
-                res.status(200).json({
-                    data: players
-                })
+                res.status(200).json(players)
             })
             .catch((err) => {
                 return res.status(500).json({
@@ -20,7 +18,8 @@ module.exports = {
         const player = new PlayerModel({
             name: req.body.name,
             email: req.body.email,
-            color: req.body.color
+            color: req.body.color,
+            avatarUrl: `images/${req.file.filename}`
         })
         player
             .save()

@@ -10,7 +10,10 @@ const PlayerSchema = new Schema({
     },
     color: {
         type: String, required: true, unique: false
-    }
+    },
+    avatarUrl: {
+        type: String,
+    },
 })
 
 module.exports = mongoose.model('Player', PlayerSchema)

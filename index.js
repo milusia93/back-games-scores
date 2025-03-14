@@ -17,6 +17,8 @@ const app = express();
 app.use(express.json())
 app.use(cors());
 
+app.use('/images', express.static('images'))
+
 const PlayersRoutes = require('./app/routes/PlayersRoutes')();
 app.use('/players', PlayersRoutes);
 

@@ -4,9 +4,7 @@ module.exports = {
     index: (req, res) => {
         GameModel.find()
             .then((games) => {
-                res.status(200).json({
-                    data: games
-                })
+                res.status(200).json(games)
             })
             .catch((err) => {
                 return res.status(500).json({
@@ -20,7 +18,8 @@ module.exports = {
         const game = new GameModel({
             name: req.body.name,
             numplayers: req.body.numplayers,
-            genres: req.body.genres
+            genres: req.body.genres,
+            imageUrl: `images/${req.file.filename}`
         })
         game
             .save()
