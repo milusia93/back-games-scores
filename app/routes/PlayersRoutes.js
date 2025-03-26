@@ -27,7 +27,7 @@ module.exports = () => {
     router.delete('/delete/:id', PlayersController.delete)
 
     //PUT/players/update/:id
-    router.put('/update/:id', PlayersController.update)
+    router.put('/update/:id', upload.single("file"), PlayersController.update);
 
     //GET /players/:id
     router.get('/:id', PlayersController.player)

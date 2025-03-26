@@ -19,7 +19,8 @@ module.exports = {
             name: req.body.name,
             email: req.body.email,
             color: req.body.color,
-            avatarUrl: `images/${req.file.filename}`
+            avatarUrl: req.file ? `images/${req.file.filename}` : undefined,
+            gamesPlayed: req.body.gamesPlayed
         })
         player
             .save()
@@ -53,29 +54,56 @@ module.exports = {
             })
     },
 
-    update: (req, res) => {
-        PlayerModel.findByIdAndUpdate(req.params.id,
-            {
+    // update: (req, res) => {
+    //     PlayerModel.findByIdAndUpdate(req.params.id,
+    //         {
+    //             name: req.body.name,
+    //             email: req.body.email,
+    //             color: req.body.color,
+    //             avatarUrl: req.file ? `images/${req.file.filename}` : undefined,
+    //             gamesPlayed: req.body.gamesPlayed
+    //         },
+    //         { new: true }
+    //     )
+    //         .then((updatedPlayer) => {
+    //             console.log(updatedPlayer);
+    //             if (updatedPlayer) {
+    //                 res.status(200).send(updatedPlayer)
+    //             } else {
+    //                 res.status(404).json({ err: "not found" })
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             return res.status(500).json({
+    //                 message: "Error while updating player",
+    //                 error: err,
+    //             });
+    //         })
+    // },
+    update: async (req, res) => {
+        try {
+            const updateData = {
                 name: req.body.name,
                 email: req.body.email,
-                color: req.body.color
-            },
-            { new: true }
-        )
-            .then((updatedPlayer) => {
-                console.log(updatedPlayer);
-                if (updatedPlayer) {
-                    res.status(201).send(updatedPlayer)
-                } else {
-                    res.status(404).json({ err: "not found" })
-                }
-            })
-            .catch((err) => {
-                return res.status(500).json({
-                    message: "Error while updating player",
-                    error: err,
-                });
-            })
+                color: req.body.color,
+                gamesPlayed: req.body.gamesPlayed
+            };
+    
+            // Tylko jeśli nowy plik został przesłany, zmień `avatarUrl`
+            if (req.file) {
+                updateData.avatarUrl = `images/${req.file.filename}`;
+            }
+            console.log(req.params.id, updateData)
+            const updatedPlayer = await PlayerModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    
+            if (updatedPlayer) {
+                res.status(200).send(updatedPlayer);
+            } else {
+                res.status(404).json({ err: "not found" });
+            }
+        } catch (err) {
+            res.status(500).json({ message: "Error while updating player", error: err });
+        }
     },
 
     player: (req, res) => {

@@ -19,7 +19,7 @@ module.exports = {
             name: req.body.name,
             numplayers: req.body.numplayers,
             genres: req.body.genres,
-            imageUrl: `images/${req.file.filename}`
+            imageUrl: req.file ? `images/${req.file.filename}` : undefined,
         })
         game
             .save()
@@ -57,7 +57,8 @@ module.exports = {
             {
                 name: req.body.name,
                 numplayers: req.body.numplayers,
-                genres: req.body.genres
+                genres: req.body.genres,
+                imageUrl: req.file ? `images/${req.file.filename}` : undefined
             },
             { new: true }
         )

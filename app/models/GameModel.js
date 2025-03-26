@@ -14,6 +14,7 @@ const GameSchema = new Schema({
     imageUrl: {
         type: String,
     },
+ 
 })
 
 module.exports = mongoose.model('Game', GameSchema)

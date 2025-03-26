@@ -14,6 +14,9 @@ const PlayerSchema = new Schema({
     avatarUrl: {
         type: String,
     },
+    gamesPlayed: {
+        type: String
+    }
 })
 
 module.exports = mongoose.model('Player', PlayerSchema)
