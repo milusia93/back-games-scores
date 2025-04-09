@@ -28,11 +28,32 @@ module.exports = {
                 res.status(201).send(player);
             })
             .catch((err) => {
-                console.log("test");
-                res.status(500).json({
-                    message: "Error while creating new player",
-                    error: err,
-                });
+
+                if (err.code === 11000) {
+                    if (err.keyPattern.name === 1) {
+                        res.status(409).json({
+                            signedup: false,
+                            message: {
+                                name: [
+                                    "Username has already been taken"
+                                ]
+                            }
+                        })
+                    } else if (err.keyPattern.email === 1) {
+                        res.status(409).json({
+                            signedup: false,
+                            message: {
+                                email: [
+                                    "Email has already been taken"
+                                ]
+                            }
+                        })
+                    }
+                } else {
+                    res.status(500).json({
+                        error: err
+                    })
+                }
             });
     },
 
@@ -40,10 +61,22 @@ module.exports = {
         PlayerModel.findByIdAndDelete(req.params.id)
             .then((deletedPlayer) => {
                 console.log(deletedPlayer);
+
+                if (deletedPlayer.avatarUrl) {
+                    const imagePath = `./${deletedPlayer.avatarUrl}`;
+                    fs.unlink(imagePath, (err) => {
+                        if (err) {
+                            console.error("Błąd podczas usuwania pliku:", err);
+                        } else {
+                            console.log("Usunięto plik:", imagePath);
+                        }
+                    });
+                }
+
                 if (deletedPlayer) {
-                    res.status(200).json({ deleted: true })
+                    res.status(200).json({ deleted: true });
                 } else {
-                    res.status(404).json({ err: "not found" })
+                    res.status(404).json({ err: "not found" });
                 }
             })
             .catch((err) => {
@@ -51,7 +84,7 @@ module.exports = {
                     message: "Error while deleting player",
                     error: err,
                 });
-            })
+            });
     },
 
     // update: (req, res) => {
@@ -82,47 +115,47 @@ module.exports = {
     // },
     update: async (req, res) => {
         try {
-          const updateData = {
-            name: req.body.name,
-            email: req.body.email,
-            color: req.body.color,
-            gamesPlayed: req.body.gamesPlayed,
-          };
-    
-          // Tylko jeśli nowy plik został przesłany, zmień `avatarUrl`
-          if (req.file) {
-            updateData.avatarUrl = `images/${req.file.filename}`;
-          }
-    
-          const prevPlayerData = await PlayerModel.findById(req.params.id);
-          if (prevPlayerData.avatarUrl && req.file) {
-            const imagePath = `./${prevPlayerData.avatarUrl}`;
-            fs.unlink(imagePath, (err) => {
-              if (err) {
-                console.error("Błąd podczas usuwania pliku:", err);
-              } else {
-                console.log("Usunięto plik:", imagePath);
-              }
-            });
-          }
-    
-          const updatedPlayer = await PlayerModel.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            { new: true }
-          );
-    
-          if (updatedPlayer) {
-            res.status(200).send(updatedPlayer);
-          } else {
-            res.status(404).json({ err: "not found" });
-          }
+            const updateData = {
+                name: req.body.name,
+                email: req.body.email,
+                color: req.body.color,
+                gamesPlayed: req.body.gamesPlayed,
+            };
+
+            // Tylko jeśli nowy plik został przesłany, zmień `avatarUrl`
+            if (req.file) {
+                updateData.avatarUrl = `images/${req.file.filename}`;
+            }
+
+            const prevPlayerData = await PlayerModel.findById(req.params.id);
+            if (prevPlayerData.avatarUrl && req.file) {
+                const imagePath = `./${prevPlayerData.avatarUrl}`;
+                fs.unlink(imagePath, (err) => {
+                    if (err) {
+                        console.error("Błąd podczas usuwania pliku:", err);
+                    } else {
+                        console.log("Usunięto plik:", imagePath);
+                    }
+                });
+            }
+
+            const updatedPlayer = await PlayerModel.findByIdAndUpdate(
+                req.params.id,
+                updateData,
+                { new: true }
+            );
+
+            if (updatedPlayer) {
+                res.status(200).send(updatedPlayer);
+            } else {
+                res.status(404).json({ err: "not found" });
+            }
         } catch (err) {
-          res
-            .status(500)
-            .json({ message: "Error while updating player", error: err });
+            res
+                .status(500)
+                .json({ message: "Error while updating player", error: err });
         }
-      },
+    },
 
     player: (req, res) => {
         PlayerModel.findById(req.params.id)
