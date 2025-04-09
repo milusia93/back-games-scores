@@ -82,29 +82,47 @@ module.exports = {
     // },
     update: async (req, res) => {
         try {
-            const updateData = {
-                name: req.body.name,
-                email: req.body.email,
-                color: req.body.color,
-                gamesPlayed: req.body.gamesPlayed
-            };
+          const updateData = {
+            name: req.body.name,
+            email: req.body.email,
+            color: req.body.color,
+            gamesPlayed: req.body.gamesPlayed,
+          };
     
-            // Tylko jeśli nowy plik został przesłany, zmień `avatarUrl`
-            if (req.file) {
-                updateData.avatarUrl = `images/${req.file.filename}`;
-            }
-            console.log(req.params.id, updateData)
-            const updatedPlayer = await PlayerModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
+          // Tylko jeśli nowy plik został przesłany, zmień `avatarUrl`
+          if (req.file) {
+            updateData.avatarUrl = `images/${req.file.filename}`;
+          }
     
-            if (updatedPlayer) {
-                res.status(200).send(updatedPlayer);
-            } else {
-                res.status(404).json({ err: "not found" });
-            }
+          const prevPlayerData = await PlayerModel.findById(req.params.id);
+          if (prevPlayerData.avatarUrl && req.file) {
+            const imagePath = `./${prevPlayerData.avatarUrl}`;
+            fs.unlink(imagePath, (err) => {
+              if (err) {
+                console.error("Błąd podczas usuwania pliku:", err);
+              } else {
+                console.log("Usunięto plik:", imagePath);
+              }
+            });
+          }
+    
+          const updatedPlayer = await PlayerModel.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+          );
+    
+          if (updatedPlayer) {
+            res.status(200).send(updatedPlayer);
+          } else {
+            res.status(404).json({ err: "not found" });
+          }
         } catch (err) {
-            res.status(500).json({ message: "Error while updating player", error: err });
+          res
+            .status(500)
+            .json({ message: "Error while updating player", error: err });
         }
-    },
+      },
 
     player: (req, res) => {
         PlayerModel.findById(req.params.id)
