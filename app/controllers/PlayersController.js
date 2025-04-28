@@ -1,4 +1,5 @@
 const PlayerModel = require('../models/PlayerModel');
+const fs = require('fs')
 
 module.exports = {
     index: (req, res) => {
