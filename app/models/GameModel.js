@@ -5,7 +5,10 @@ const GameSchema = new Schema({
     name: {
         type: String, required: true, unique: true
     },
-    numplayers: {
+    minnumplayers: {
+        type: Number, required: true
+    },
+    maxnumplayers: {
         type: Number, required: true
     },
     genres: [{

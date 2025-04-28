@@ -27,7 +27,7 @@ module.exports = () => {
     router.delete('/delete/:id', GamesController.delete)
 
     //PUT/games/update/:id
-    router.put('/update/:id', GamesController.update)
+    router.put('/update/:id', upload.single("file"), GamesController.update)
 
     //GET /games/:id
     router.get('/:id', GamesController.game)

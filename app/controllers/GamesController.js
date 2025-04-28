@@ -18,7 +18,8 @@ module.exports = {
     create: (req, res) => {
         const game = new GameModel({
             name: req.body.name,
-            numplayers: req.body.numplayers,
+            minnumplayers: req.body.minnumplayers,
+            maxnumplayers: req.body.maxnumplayers,
             genres: req.body.genres,
             imageUrl: req.file ? `images/${req.file.filename}` : undefined,
         });
@@ -75,7 +76,8 @@ module.exports = {
         try {
             const updateData = {
                 name: req.body.name,
-                numplayers: req.body.numplayers,
+                minnumplayers: req.body.minnumplayers,
+                maxnumplayers: req.body.maxnumplayers,
                 genres: req.body.genres,
             };
 
