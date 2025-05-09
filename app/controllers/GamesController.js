@@ -28,10 +28,8 @@ module.exports = {
             .save()
             .then(() => {
                 res.status(201).send(game);
-                console.log(res)
             })
             .catch((err) => {
-                console.log(err)
                 if (err.code === 11000) {
                     res.status(409).json({
                         signedup: false,
@@ -42,7 +40,6 @@ module.exports = {
                         error: err,
                     });
                 }
-                console.log(err)
             });
     },
 

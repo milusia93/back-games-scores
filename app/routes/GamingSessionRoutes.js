@@ -4,19 +4,19 @@ const GamingSessionController = require('../controllers/GamingSessionController'
 
 
 module.exports = () => {
-    //GET /gamingsession
+    //GET /gamingsessions
     router.get('/', GamingSessionController.index)
 
-    //POST /gamingsession/add
+    //POST /gamingsessions/add
     router.post('/add', GamingSessionController.create)
 
-    //DELETE /gamingsession/delete/:id
+    //DELETE /gamingsessions/delete/:id
     router.delete('/delete/:id', GamingSessionController.delete)
 
-    //PUT/gamingsession/update/:id
+    //PUT/gamingsessions/update/:id
     router.put('/update/:id', GamingSessionController.update)
 
-    //GET /gamingsession/:id
+    //GET /gamingsessions/:id
     router.get('/:id', GamingSessionController.session)
 
     return router

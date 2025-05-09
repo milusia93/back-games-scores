@@ -3,17 +3,17 @@ const GamingSessionModel = require('../models/GamingSessionModel')
 module.exports = {
     index: (req, res) => {
         GamingSessionModel.find()
+            .populate('game')
+            .populate('players')
             .then((sessions) => {
-                res.status(200).json({
-                    data: sessions
-                })
+                res.status(200).json(sessions);
             })
             .catch((err) => {
-                return res.status(500).json({
+                res.status(500).json({
                     message: "error while fetching sessions",
                     error: err
-                })
-            })
+                });
+            });
     },
 
     create: (req, res) => {
@@ -31,7 +31,6 @@ module.exports = {
                 res.status(201).send(session);
             })
             .catch((err) => {
-                console.log("test");
                 res.status(500).json({
                     message: "Error while creating new session",
                     error: err,
@@ -42,7 +41,6 @@ module.exports = {
     delete: (req, res) => {
         GamingSessionModel.findByIdAndDelete(req.params.id)
             .then((deletedsession) => {
-                console.log(deletedsession);
                 if (deletedsession) {
                     res.status(200).json({ deleted: true })
                 } else {
@@ -70,7 +68,6 @@ module.exports = {
             { new: true }
         )
             .then((updatedsession) => {
-                console.log(updatedsession);
                 if (updatedsession) {
                     res.status(201).send(updatedsession)
                 } else {
@@ -88,7 +85,6 @@ module.exports = {
     session: (req, res) => {
         GamingSessionModel.findById(req.params.id)
             .then((session) => {
-                console.log(session);
                 if (session) {
                     res.status(200).send(session)
                 } else {

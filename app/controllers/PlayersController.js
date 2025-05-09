@@ -53,8 +53,6 @@ module.exports = {
     delete: (req, res) => {
         PlayerModel.findByIdAndDelete(req.params.id)
             .then((deletedPlayer) => {
-                console.log(deletedPlayer);
-
                 if (deletedPlayer.avatarUrl) {
                     const imagePath = `./${deletedPlayer.avatarUrl}`;
                     fs.unlink(imagePath, (err) => {
@@ -80,32 +78,6 @@ module.exports = {
             });
     },
 
-    // update: (req, res) => {
-    //     PlayerModel.findByIdAndUpdate(req.params.id,
-    //         {
-    //             name: req.body.name,
-    //             email: req.body.email,
-    //             color: req.body.color,
-    //             avatarUrl: req.file ? `images/${req.file.filename}` : undefined,
-    //             gamesPlayed: req.body.gamesPlayed
-    //         },
-    //         { new: true }
-    //     )
-    //         .then((updatedPlayer) => {
-    //             console.log(updatedPlayer);
-    //             if (updatedPlayer) {
-    //                 res.status(200).send(updatedPlayer)
-    //             } else {
-    //                 res.status(404).json({ err: "not found" })
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             return res.status(500).json({
-    //                 message: "Error while updating player",
-    //                 error: err,
-    //             });
-    //         })
-    // },
     update: async (req, res) => {
         try {
             const updateData = {
@@ -171,7 +143,6 @@ module.exports = {
     player: (req, res) => {
         PlayerModel.findById(req.params.id)
             .then((player) => {
-                console.log(player);
                 if (player) {
                     res.status(200).send(player)
                 } else {

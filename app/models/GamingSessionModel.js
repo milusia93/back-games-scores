@@ -5,6 +5,7 @@ const GamingSessionSchema = new Schema({
     game: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Game",
+      required: true,
     },
     numplayers: {
       type: Number,
@@ -14,6 +15,7 @@ const GamingSessionSchema = new Schema({
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Player",
+        required: true,
       },
     ],
     date: {
