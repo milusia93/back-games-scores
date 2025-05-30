@@ -3,10 +3,10 @@ const GamingSessionModel = require('../models/GamingSessionModel')
 module.exports = {
     index: async (req, res) => {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 5; 
+        const limit = parseInt(req.query.limit) || 5;
         const sortingCategory = req.query.category || 'date';
         const sortingDirection = req.query.direction || 'descending';
-        const status = req.query.status; 
+        const status = req.query.status;
         const gameId = req.query.gameId;
 
         const sortMethods = {
@@ -31,7 +31,7 @@ module.exports = {
         } else if (status === "ongoing") {
             query.finished = false;
         }
-    
+
         if (gameId) {
             query.game = gameId;
         }
@@ -113,6 +113,9 @@ module.exports = {
             },
             { new: true }
         )
+            .populate('game')
+            .populate('players')
+            .populate('winner')
             .then((updatedsession) => {
                 if (updatedsession) {
                     res.status(201).send(updatedsession)
@@ -130,6 +133,9 @@ module.exports = {
 
     session: (req, res) => {
         GamingSessionModel.findById(req.params.id)
+            .populate('game')
+            .populate('players')
+            .populate('winner')
             .then((session) => {
                 if (session) {
                     res.status(200).send(session)
