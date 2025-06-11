@@ -16,12 +16,27 @@ module.exports = {
     },
 
     create: (req, res) => {
+        const { name, minnumplayers, maxnumplayers, genres } = req.body;
+        const imageUrl = req.file ? `images/${req.file.filename}` : undefined;
+
+        if (!name || !minnumplayers || !maxnumplayers || minnumplayers < 1) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        if (maxnumplayers < 1 || minnumplayers < 1) {
+            return res.status(400).json({ message: "Minimum number of players must be at least 1" });
+        }
+
+        if (maxnumplayers < minnumplayers) {
+            return res.status(400).json({ message: "Maximum number of players must be greater or equal to minimum" });
+        }
+
         const game = new GameModel({
-            name: req.body.name,
-            minnumplayers: req.body.minnumplayers,
-            maxnumplayers: req.body.maxnumplayers,
-            genres: req.body.genres,
-            imageUrl: req.file ? `images/${req.file.filename}` : undefined,
+            name,
+            minnumplayers,
+            maxnumplayers,
+            genres,
+            imageUrl,
         });
 
         game
@@ -70,56 +85,64 @@ module.exports = {
     },
 
     update: async (req, res) => {
-        try {
-            const updateData = {
-                name: req.body.name,
-                minnumplayers: req.body.minnumplayers,
-                maxnumplayers: req.body.maxnumplayers,
-                genres: req.body.genres,
-            };
+    try {
+        const { name, minnumplayers, maxnumplayers, genres } = req.body;
 
-            if (req.file) {
-                updateData.imageUrl = `images/${req.file.filename}`;
+    
+        if (!name || !minnumplayers || !maxnumplayers) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        if (minnumplayers < 1) {
+            return res.status(400).json({ message: "Minimum number of players must be at least 1" });
+        }
+        if (maxnumplayers < minnumplayers) {
+            return res.status(400).json({ message: "Maximum number of players must be greater or equal to minimum" });
+        }
+
+        const updateData = { name, minnumplayers, maxnumplayers, genres };
+
+        if (req.file) {
+            updateData.imageUrl = `images/${req.file.filename}`;
+        }
+
+        const prevGame = await GameModel.findById(req.params.id);
+        if (!prevGame) {
+            return res.status(404).json({ err: "Game not found" });
+        }
+
+        if (prevGame.imageUrl && req.file) {
+            const imagePath = `./${prevGame.imageUrl}`;
+            try {
+                await fs.unlink(imagePath);
+            } catch (err) {
+                console.error("Error removing old image file:", err);
             }
+        }
 
-            const prevGame = await GameModel.findById(req.params.id);
-            if (!prevGame) {
-                return res.status(404).json({ err: "Game not found" });
-            }
+        const updatedGame = await GameModel.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true, runValidators: true }
+        );
 
-            if (prevGame.imageUrl && req.file) {
-                const imagePath = `./${prevGame.imageUrl}`;
-                fs.unlink(imagePath, (err) => {
-                    if (err) {
-                        console.error("Błąd podczas usuwania pliku:", err);
-                    }
-                });
-            }
+        if (!updatedGame) {
+            return res.status(404).json({ err: "Game not found" });
+        }
 
-            const updatedGame = await GameModel.findByIdAndUpdate(
-                req.params.id,
-                updateData,
-                { new: true, runValidators: true }
-            );
-
-            if (!updatedGame) {
-                return res.status(404).json({ err: "Game not found" });
-            }
-
-            res.status(200).send(updatedGame);
-        } catch (err) {
-            if (err.code === 11000) {
-                return res.status(409).json({
-                    error: "Game name already exists",
-                });
-            }
-
-            res.status(500).json({
-                message: "Error while updating game",
-                error: err,
+        res.status(200).send(updatedGame);
+    } catch (err) {
+        if (err.code === 11000) {
+            return res.status(409).json({
+                error: "Game name already exists",
             });
         }
-    },
+
+        res.status(500).json({
+            message: "Error while updating game",
+            error: err,
+        });
+    }
+},
 
     game: (req, res) => {
         GameModel.findById(req.params.id)

@@ -62,26 +62,35 @@ module.exports = {
             });
     },
 
-    create: (req, res) => {
+    create: async (req, res) => {
+        const { game, numplayers, players, date, finished, winner } = req.body;
+
+        if (!game || !numplayers || !players || !date || finished === undefined) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        if (players.length !== numplayers) {
+            return res.status(400).json({ message: "Number of players does not match numplayers" });
+        }
+
         const session = new GamingSessionModel({
-            game: req.body.game,
-            numplayers: req.body.numplayers,
-            players: req.body.players,
-            date: req.body.date,
-            finished: req.body.finished,
-            winner: req.body.winner
-        })
-        session
-            .save()
-            .then(() => {
-                res.status(201).send(session);
-            })
-            .catch((err) => {
-                res.status(500).json({
-                    message: "Error while creating new session",
-                    error: err,
-                });
+            game,
+            numplayers,
+            players,
+            date,
+            finished,
+            winner
+        });
+
+        try {
+            const saved = await session.save();
+            res.status(201).send(saved);
+        } catch (err) {
+            res.status(500).json({
+                message: "Error while creating new session",
+                error: err,
             });
+        }
     },
 
     delete: (req, res) => {
@@ -102,14 +111,25 @@ module.exports = {
     },
 
     update: (req, res) => {
-        GamingSessionModel.findByIdAndUpdate(req.params.id,
+        const { game, numplayers, players, date, finished, winner } = req.body;
+
+        if (!game || !numplayers || !players || !date || finished === undefined) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        if (players.length !== numplayers) {
+            return res.status(400).json({ message: "Number of players does not match numplayers" });
+        }
+
+        GamingSessionModel.findByIdAndUpdate(
+            req.params.id,
             {
-                game: req.body.game,
-                numplayers: req.body.numplayers,
-                players: req.body.players,
-                date: req.body.date,
-                finished: req.body.finished,
-                winner: req.body.winner
+                game,
+                numplayers,
+                players,
+                date,
+                finished,
+                winner,
             },
             { new: true }
         )
@@ -118,9 +138,9 @@ module.exports = {
             .populate('winner')
             .then((updatedsession) => {
                 if (updatedsession) {
-                    res.status(201).send(updatedsession)
+                    res.status(201).send(updatedsession);
                 } else {
-                    res.status(404).json({ err: "not found" })
+                    res.status(404).json({ err: "not found" });
                 }
             })
             .catch((err) => {
@@ -128,7 +148,7 @@ module.exports = {
                     message: "Error while updating session",
                     error: err,
                 });
-            })
+            });
     },
 
     session: (req, res) => {

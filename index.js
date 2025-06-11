@@ -28,6 +28,9 @@ app.use('/games', GamesRoutes);
 const GamingSessionRoutes = require('./app/routes/GamingSessionRoutes')();
 app.use('/gamingsessions', GamingSessionRoutes);
 
+const StatisticsRoutes = require('./app/routes/StatisticsRoutes')();
+app.use('/statistics', StatisticsRoutes);
+
 app.listen(config.app.port, () => {
     console.log('Express server is up');
 });
