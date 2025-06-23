@@ -4,14 +4,14 @@ const PlayerModel = require('../models/PlayerModel');
 
 const getGamesPerPlayer = async (req, res) => {
     try {
-        const sessions = await GamingSession.find().populate('players');
-        const playerCounts = {};
+        const players = await PlayerModel.find();
+        const playerCounts = [];
 
-        sessions.forEach(session => {
-            session.players.forEach(player => {
-                const playerName = player.name;
-                playerCounts[playerName] = (playerCounts[playerName] || 0) + 1;
-            });
+        players.forEach(player => {
+            playerCounts.push({
+                player: player,
+                gamesCount: player.gamesPlayed.length
+            })
         });
 
         res.json(playerCounts);

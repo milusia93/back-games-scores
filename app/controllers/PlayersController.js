@@ -140,20 +140,26 @@ module.exports = {
         }
     },
 
-    player: (req, res) => {
-        PlayerModel.findById(req.params.id)
-            .then((player) => {
-                if (player) {
-                    res.status(200).send(player)
-                } else {
-                    res.status(404).json({ err: "not found" })
-                }
-            })
-            .catch((err) => {
-                return res.status(500).json({
-                    message: "Error while fetching player",
-                    error: err,
+    player: async (req, res) => {
+        try {
+            const player = await PlayerModel.findById(req.params.id)
+                .populate({
+                    path: "gamesPlayed.sessionId",
+                    populate: {
+                        path: "game",
+                    },
                 });
-            })
+
+            if (!player) {
+                return res.status(404).json({ err: "not found" });
+            }
+
+            res.status(200).send(player);
+        } catch (err) {
+            return res.status(500).json({
+                message: "Error while fetching player",
+                error: err,
+            });
+        }
     }
 }
