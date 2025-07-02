@@ -7,6 +7,8 @@ module.exports = () => {
 
     //GET /statistics/games_per_player
     router.get('/games_per_player', StatisticsController.getGamesPerPlayer);
+    //GET /statistics/current_champion_title_counter
+    router.get('/current_champion_title_counter', StatisticsController.getCurrentChampionTitleCounter);
 
 
     return router
