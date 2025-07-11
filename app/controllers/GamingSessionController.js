@@ -63,7 +63,7 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { game, numplayers, players, date, finished, winner } = req.body;
+      const { game, numplayers, players, date, finished, time, winner } = req.body;
 
       if (!game || !numplayers || !players || !date || finished === undefined) {
         return res.status(400).json({ message: "Missing required fields" });
@@ -81,6 +81,7 @@ module.exports = {
         players,
         date,
         finished,
+        time,
         winner,
       });
 
@@ -152,7 +153,7 @@ module.exports = {
 
   update: async (req, res) => {
     try {
-      const { game, numplayers, players, date, finished, winner } = req.body;
+      const { game, numplayers, players, date, finished, time, winner } = req.body;
 
       if (!game || !numplayers || !players || !date || finished === undefined) {
         return res.status(400).json({ message: "Missing required fields" });
@@ -175,7 +176,7 @@ module.exports = {
       // Zaktualizuj sesję
       const updatedSession = await GamingSessionModel.findByIdAndUpdate(
         req.params.id,
-        { game, numplayers, players, date, finished, winner },
+        { game, numplayers, players, date, finished, time, winner },
         { new: true }
       );
 

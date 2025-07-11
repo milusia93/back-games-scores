@@ -28,8 +28,8 @@ const getCurrentChampionTitleCounter = async (req, res) => {
 
         for (const game of games) {
             const latestSession = await GamingSessionModel
-                .findOne({ game: game._id, finished: true, winner: { $ne: null } })
-                .sort({ date: -1 })
+                .findOne({ game: game._id, finished: true, winner: { $ne: null }, time: { $exists: true } })
+                .sort({ date: -1, time: -1 })
                 .populate('winner');
 
             if (latestSession && latestSession.winner) {
